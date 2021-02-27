@@ -4,15 +4,34 @@ orbs:
   aws-ecr: circleci/aws-ecr@6.7.0
 
 workflows:
-  build_and_push_image:
-    jobs:
-      - aws-ecr/build-and-push-image:
-          account-url: AWS_ECR_ACCOUNT_URL
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          create-repo: true
-          dockerfile: Dockerfile
-          path: .
-          region: AWS_REGION
-          repo: aws-ecr-demo
-          tag: "$CIRCLE_SHA1"
+  jobs:
+    - build_test
+    - aws-ecr/build-and-push-image:
+        account-url: AWS_ECR_ACCOUNT_URL
+        aws-access-key-id: AWS_ACCESS_KEY_ID
+        aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+        create-repo: true
+        dockerfile: Dockerfile
+        path: .
+        region: AWS_REGION
+        repo: aws-ecr-demo
+        tag: "$CIRCLE_SHA1"
+
+
+jobs:
+  build_test:
+      docker:
+        - image: circleci/node:alpine
+      steps:
+        - checkout
+        - run:
+            name: install dependency
+            command: |
+              npm install --production
+        - run:
+            name: Run Tests
+            command: |
+              npm test
+  
+  # deploy:
+
