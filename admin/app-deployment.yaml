@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - image: gcr.io/circle-ci-demo/circleci-gke:v1
-          name: dominic-backend
+          name: backend
           ports:
             - containerPort: 3000
               name: ci-deploy
