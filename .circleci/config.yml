@@ -24,8 +24,8 @@ workflows:
       #     requires:
       #       - test
       - deploy_to_staging
-          # requires:
-          #   - aws-ecr/build-and-push-image
+          requires:
+            - aws-ecr/build-and-push-image
 
 configure_awscloud: &configure_awscloud
   run:
@@ -74,7 +74,6 @@ jobs:
   deploy_to_staging:
     docker:
       - image: ubuntu:18.04
-    # working_directory: ~/aws-ecr-demo
     steps:
       - checkout
       - *install_ansible

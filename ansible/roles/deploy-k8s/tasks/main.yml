@@ -1,12 +1,12 @@
 - name: Provision a deployment Object
-  k8s:
+  k8s_row:
     state: present
-    src: {{ CIRCLE_WORKING_DIRECTORY }}/admin/app-deployment.yml
+    src: /admin/app-deployment.yml
   
 - name: Provision service object 
-  k8s:
+  k8s_row:
     state: present
-    src: {{ CIRCLE_WORKING_DIRECTORY }}/admin/app-service.yml
+    src: /admin/app-service.yml"
 
 # - name: create ingress service 
 #   k8s:
