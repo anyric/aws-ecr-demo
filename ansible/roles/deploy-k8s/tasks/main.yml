@@ -1,12 +1,12 @@
 - name: Provision a deployment Object
   k8s:
     state: present
-    src: /admin/app-deployment.yml
+    src: /root/project/admin/app-deployment.yml
   
 - name: Provision service object 
   k8s:
     state: present
-    src: /admin/app-service.yml"
+    src: /root/project/admin/app-service.yml"
 
 # - name: create ingress service 
 #   k8s:
