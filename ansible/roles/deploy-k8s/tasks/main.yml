@@ -1,0 +1,28 @@
+- name: Install Open-shift 
+  pip:
+    name: openshift
+
+- name: Provision a deployment Object
+  k8s:
+    state: present
+    src: /home/circleci/aws-ecr-demo/admin/app-deployment.yml
+  
+- name: Provision service object 
+  k8s:
+    state: present
+    src: /home/circleci/aws-ecr-demo/admin/app-service.yml
+
+# - name: create ingress service 
+#   k8s:
+#     state: present
+#     src: /home/circleci/tech-talent-infra/ingress.yml
+
+# - name: Provision autoscaler object 
+#   k8s:
+#     state: present
+#     src: /home/circleci/tech-talent-infra/autoscaler.yml
+
+# - name: Provision nginx service object 
+#   k8s:
+#     state: present
+#     src: /home/circleci/tech-talent-infra/nginx-service.yml

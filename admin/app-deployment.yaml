@@ -2,6 +2,7 @@ apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: circle-ci-cluster
+  namespace: staging
   labels:
     app: simple-backend
 spec:
@@ -18,7 +19,7 @@ spec:
         tier: backend
     spec:
       containers:
-        - image: gcr.io/circle-ci-demo/circleci-gke:v1
+        - image: {{ DEPLOYMENT_IMAGE }}
           name: backend
           ports:
             - containerPort: 3000

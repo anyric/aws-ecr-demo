@@ -5,9 +5,12 @@ orbs:
 
 
 workflows:
-  build_and_push_image:
+  build-test-deploy:
     jobs:
-      - build_test
+      - build
+      - test:
+          requires:
+            - build
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
@@ -19,10 +22,27 @@ workflows:
           repo: aws-ecr-demo
           tag: "$CIRCLE_SHA1"
           requires:
-            - build_test
+            - test
+      - deploy_to_staging:
+          requires:
+            - aws-ecr/build-and-push-image
+
+configure_awscloud: &configure_awscloud
+  run:
+    name: configure awscloud default settings
+    command: |
+      aws configure
+     
+deploy_to_kubernetes: &deploy_to_kubernetes
+  run:
+    name: Run ansible playbook to configure kubernetes
+    command: |
+      export DEPLOYMENT_IMAGE=$AWS_ECR_ACCOUNT_URL/aws-ecr-demo:$(echo $CIRCLE_SHA1)
+      ansible-playbook ansible/main.yml -vvv
+
 
 jobs:
-  build_test:
+  build:
     docker:
       - image: circleci/node:9.11.2-stretch
     steps:
@@ -31,7 +51,21 @@ jobs:
           name: install dependency
           command: |
             npm install --production
+
+  test:
+    docker:
+      - image: circleci/node:9.11.2-stretch
+    steps:
+      - checkout
       - run:
-          name: show file list
-          command: ls
-            
+          name: install dependency
+          command: |
+            npm install --production
+
+  deploy_to_staging:
+    docker:
+      - image: $DEPLOYMENT_IMAGE
+    steps:
+      - checkout
+      - *configure_awscloud
+      - *deploy_to_kubernetes
