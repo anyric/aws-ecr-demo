@@ -1,12 +1,12 @@
 - name: Provision a deployment Object
   k8s:
     state: present
-    src: "{{OBJECT_FILE_DIR}}/app-deployment.yml"
+    src: "{{ OBJECT_FILE_DIR }}/app-deployment.yml"
   
 - name: Provision service object 
   k8s:
     state: present
-    src: "{{OBJECT_FILE_DIR}}/app-service.yml"
+    src: "{{ OBJECT_FILE_DIR }}/app-service.yml"
 
 # - name: create ingress service 
 #   k8s:
