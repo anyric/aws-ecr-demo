@@ -1,10 +1,10 @@
 - name: Provision a deployment Object
-  k8s_row:
+  k8s:
     state: present
     src: /admin/app-deployment.yml
   
 - name: Provision service object 
-  k8s_row:
+  k8s:
     state: present
     src: /admin/app-service.yml"
 
