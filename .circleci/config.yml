@@ -39,7 +39,6 @@ install_ansible: &install_ansible
     command: |
       apt-get update && apt-get install python3-pip -y
       pip3 install ansible openshift
-      ansible --version
 
 deploy_to_kubernetes: &deploy_to_kubernetes
   run:
@@ -75,6 +74,7 @@ jobs:
   deploy_to_staging:
     docker:
       - image: ubuntu:18.04
+    # working_directory: ~/aws-ecr-demo
     steps:
       - checkout
       - *install_ansible
