@@ -23,7 +23,7 @@ workflows:
           tag: "$CIRCLE_SHA1"
       #     requires:
       #       - test
-      - deploy_to_staging
+      - deploy_to_staging:
           requires:
             - aws-ecr/build-and-push-image
 
