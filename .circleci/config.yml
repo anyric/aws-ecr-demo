@@ -44,9 +44,10 @@ deploy_to_kubernetes: &deploy_to_kubernetes
   run:
     name: Run ansible playbook to configure kubernetes
     command: |
-      export DEPLOYMENT_IMAGE=$AWS_ECR_ACCOUNT_URL/aws-ecr-demo:$(echo $CIRCLE_SHA1)
+      export DEPLOYMENT_IMAGE=$AWS_ECR_ACCOUNT_URL/aws-ecr-demo:$CIRCLE_SHA1
       ls
       pwd
+      echo $DEPLOYMENT_IMAGE
       ansible-playbook ansible/main.yml -vvv
 
 
