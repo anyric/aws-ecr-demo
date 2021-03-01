@@ -1,0 +1,4 @@
+- name: Apply service
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/app-service.yml') | from_yaml}}"

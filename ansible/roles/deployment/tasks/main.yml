@@ -1,0 +1,4 @@
+- name: Apply deployment
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/app-deployment.yml') | from_yaml}}"
