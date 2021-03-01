@@ -4,7 +4,7 @@ metadata:
   name: circle-ci-cluster
   namespace: staging
   labels:
-    app: simple-backend
+    app: ci-deploy
 spec:
   selector:
     matchLabels:
@@ -19,7 +19,7 @@ spec:
         tier: backend
     spec:
       containers:
-        - image: "{{ AWS_ECR_ACCOUNT_URL }}/aws-ecr-demo:{{ IMAGE_TAG }}"
+        - image: ${AWS_ECR_ACCOUNT_URL}/aws-ecr-demo:${CIRCLE_SHA1}
           name: backend
           ports:
             - containerPort: 3000

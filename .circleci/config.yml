@@ -27,7 +27,7 @@ workflows:
           requires:
             - aws-ecr/build-and-push-image
 
-configure_awscloud: &configure_awscloud
+configure_awscli: &configure_awscli
   run:
     name: configure awscloud default settings
     command: |
@@ -45,19 +45,27 @@ install_ansible: &install_ansible
       apt-get update && apt-get install python3-pip curl unzip -y
       pip3 install ansible openshift
 
+install_kubectl: &install_kubectl
+  run:
+    name: install kubectl
+    command: |
+      apt-get install -y apt-transport-https gnupg2
+      curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+      echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list
+      apt-get update
+      apt-get install -y gettext kubectl
+
 deploy_to_kubernetes: &deploy_to_kubernetes
   run:
     name: Run ansible playbook to configure kubernetes
     command: |
-      # if [[ "$CIRCLE_BRANCH" == 'develop' ]] ; then
-      
       aws eks --region $AWS_REGION update-kubeconfig --name staging
-      
-      # if [[ "$CIRCLE_BRANCH" == 'master' ]] ; then
-      #   aws eks --region $AWS_REGION update-kubeconfig --name staging #change to production
-
-      kubectl cluster-info
-      ansible-playbook ansible/main.yml -vvv
+      ls
+      envsubst < ./admin/app-deployment.yml.tpl > app-deployment.yml
+      envsubst < ./admin/app-service.yml.tpl > app-service.yml
+      cat app-deployment.yml
+      kubectl apply -f app-deployment.yml
+      kubectl apply -f app-service.yml
 
 
 jobs:
@@ -87,5 +95,6 @@ jobs:
     steps:
       - checkout
       - *install_ansible
-      - *configure_awscloud
+      - *configure_awscli
+      - *install_kubectl
       - *deploy_to_kubernetes
