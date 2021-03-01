@@ -6,6 +6,7 @@ metadata:
   labels:
     app: ci-deploy
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: ci-deploy
@@ -21,6 +22,7 @@ spec:
       containers:
         - image: ${AWS_ECR_ACCOUNT_URL}/aws-ecr-demo:${CIRCLE_SHA1}
           name: backend
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
               name: ci-deploy

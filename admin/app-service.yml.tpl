@@ -7,7 +7,9 @@ metadata:
     app: ci-deploy
 spec:
   ports:
-    - port: 3000
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
   selector:
     app: ci-deploy
     tier: backend
