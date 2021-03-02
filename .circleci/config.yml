@@ -19,7 +19,7 @@ workflows:
           dockerfile: Dockerfile
           path: .
           region: AWS_REGION
-          repo: aws-ecr-demo
+          repo: staging
           tag: "$CIRCLE_SHA1"
           requires:
             - test
@@ -50,7 +50,8 @@ install_kubectl: &install_kubectl
   run:
     name: install kubectl
     command: |
-      apt-get install -y apt-transport-https gnupg2
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get install -y apt-transport-https gnupg2 git-all
       curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
       echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list
       apt-get update
@@ -61,16 +62,20 @@ deploy_to_kubernetes: &deploy_to_kubernetes
     name: Deploying kubernetes objects
     command: |
       # clone the deployment scripts repo here
+      # git clone -b develop git@github.com:Tech-Talent/tech-talent-deployment-scripts.git
+      # cd tech-talent-deployment-scripts
+      export DEPLOYMENT_ENVIRONMENT=staging
+      export BACK_END_PORT=3000
       aws eks --region $AWS_REGION update-kubeconfig --name staging
-      envsubst < ./admin/app-deployment.yml.tpl > app-deployment.yml
-      envsubst < ./admin/app-service.yml.tpl > app-service.yml
-      envsubst < ./admin/app-nginx.yml.tpl > app-nginx.yml
-      envsubst < ./admin/app-autoscaler.yml.tpl > app-autoscaler.yml
-      kubectl apply -f app-deployment.yml
-      kubectl apply -f app-service.yml
+      envsubst < ./deploy-k8s/backend/deployment.yml.tpl > deployment.yml
+      envsubst < ./deploy-k8s/backend/service.yml.tpl > service.yml
+      envsubst < ./deploy-k8s/backend/autoscaler.yml.tpl > autoscaler.yml
+      envsubst < ./deploy-k8s/shared/nginx-service.yml.tpl > nginx-service.yml
+      kubectl apply -f deployment.yml
+      kubectl apply -f service.yml
       kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.44.0/deploy/static/provider/aws/deploy.yaml
-      kubectl apply -f app-nginx.yml
-      kubectl apply -f app-autoscaler.yml
+      kubectl apply -f nginx-service.yml
+      kubectl apply -f autoscaler.yml
 
 
 jobs:
